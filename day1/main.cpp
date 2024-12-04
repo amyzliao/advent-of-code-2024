@@ -73,6 +73,7 @@ int main()
     list1.push_back(stoi(line.substr(0, line.find(delimiter))));
     list2.push_back(stoi(line.substr(line.find(delimiter) + delimiter.length())));
   }
+  inputFile.close();
 
   /**
    * Part 1
@@ -86,6 +87,5 @@ int main()
   int score = similarity(list1, list2);
   cout << "Part 2 Result: " << score << endl;
 
-  inputFile.close();
   return 0;
 }
