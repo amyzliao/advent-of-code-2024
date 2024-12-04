@@ -1,56 +1,60 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
 
 using namespace std;
 
-/// @brief Calculate the distance between two lists
-/// @param list1
-/// @param list2
+/// @brief count the number of safe reports
+/// @param reports
 /// @return
-int listDistance(vector<int> &list1, vector<int> &list2)
+int countSafe(vector<vector<int>> &reports)
 {
-  /// sort the lists
-  sort(list1.begin(), list1.end());
-  sort(list2.begin(), list2.end());
+  int count = 0;
 
-  /// sum distances
-  int sum = 0;
-  for (int i = 0; i < list1.size(); i++)
+  // each report: check if it's safe
+  for (auto report : reports)
   {
-    sum += abs(list1[i] - list2[i]);
-  }
+    bool safe = true;
+    // 'i'= increasing, 'd'= decreasing
+    char direction = ' ';
 
-  return sum;
-}
-
-/// @brief Calculate the similarity between two lists.
-/// Assumes both lists are sorted.
-/// @param list1
-/// @param list2
-/// @return
-int similarity(vector<int> &list1, vector<int> &list2)
-{
-  int sum = 0;
-  int list2Index = 0;
-
-  for (int i = 0; i < list1.size(); i++)
-  {
-    // while currentlist2 is smaller or equal to currentlist1
-    while (list2[list2Index] <= list1[i] && list2Index < list2.size())
+    for (int i = 0; i < report.size() - 1; i++)
     {
-      // if equal, add currentlist1 to sum
-      if (list2[list2Index] == list1[i])
+      int curr = report[i];
+      int next = report[i + 1];
+
+      // all the invalid conditions
+      if (false
+          // adj levels differ by less than 1
+          || abs(curr - next) < 1
+          // adj levels differ by more than 3
+          || abs(curr - next) > 3
+          // increasing, but encounter a decrease
+          || (direction == 'i' && next < curr)
+          // decreasing, but encounter a increase
+          || (direction == 'd' && next > curr))
       {
-        sum += list1[i];
+        safe = false;
+        break;
       }
-      // go next
-      list2Index++;
+
+      // valid
+      if (i == 0)
+      {
+        // set direction
+        direction = (next > curr) ? 'i' : 'd';
+      }
+    }
+
+    if (safe)
+    {
+      count++;
     }
   }
 
-  return sum;
+  return count;
 }
 
 int main()
@@ -63,29 +67,34 @@ int main()
     return 1;
   }
 
-  vector<int> list1;
-  vector<int> list2;
-  string delimiter = "   ";
+  vector<vector<int>> reports;
+  char delimiter = ' ';
 
   string line;
   while (getline(inputFile, line))
   {
-    list1.push_back(stoi(line.substr(0, line.find(delimiter))));
-    list2.push_back(stoi(line.substr(line.find(delimiter) + delimiter.length())));
+    stringstream iss(line);
+    string s;
+    vector<int> report;
+    while (getline(iss, s, delimiter))
+    {
+      report.push_back(stoi(s));
+    }
+    reports.push_back(report);
   }
   inputFile.close();
 
   /**
    * Part 1
    */
-  int result = listDistance(list1, list2);
+  int result = countSafe(reports);
   cout << "Part 1 Result: " << result << endl;
 
   /**
    * Part 2
    */
-  int score = similarity(list1, list2);
-  cout << "Part 2 Result: " << score << endl;
+  // int score = similarity(list1, list2);
+  // cout << "Part 2 Result: " << score << endl;
 
   return 0;
 }
