@@ -5,7 +5,11 @@
 
 using namespace std;
 
-int listDistance(vector<int> list1, vector<int> list2)
+/// @brief Calculate the distance between two lists
+/// @param list1
+/// @param list2
+/// @return
+int listDistance(vector<int> &list1, vector<int> &list2)
 {
   /// sort the lists
   sort(list1.begin(), list1.end());
@@ -16,6 +20,34 @@ int listDistance(vector<int> list1, vector<int> list2)
   for (int i = 0; i < list1.size(); i++)
   {
     sum += abs(list1[i] - list2[i]);
+  }
+
+  return sum;
+}
+
+/// @brief Calculate the similarity between two lists.
+/// Assumes both lists are sorted.
+/// @param list1
+/// @param list2
+/// @return
+int similarity(vector<int> &list1, vector<int> &list2)
+{
+  int sum = 0;
+  int list2Index = 0;
+
+  for (int i = 0; i < list1.size(); i++)
+  {
+    // while currentlist2 is smaller or equal to currentlist1
+    while (list2[list2Index] <= list1[i] && list2Index < list2.size())
+    {
+      // if equal, add currentlist1 to sum
+      if (list2[list2Index] == list1[i])
+      {
+        sum += list1[i];
+      }
+      // go next
+      list2Index++;
+    }
   }
 
   return sum;
@@ -42,8 +74,17 @@ int main()
     list2.push_back(stoi(line.substr(line.find(delimiter) + delimiter.length())));
   }
 
+  /**
+   * Part 1
+   */
   int result = listDistance(list1, list2);
-  cout << "Result: " << result << endl;
+  cout << "Part 1 Result: " << result << endl;
+
+  /**
+   * Part 2
+   */
+  int score = similarity(list1, list2);
+  cout << "Part 2 Result: " << score << endl;
 
   inputFile.close();
   return 0;
