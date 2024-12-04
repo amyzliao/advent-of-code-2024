@@ -67,71 +67,22 @@ int countSafeDampener(vector<vector<int>> &reports)
   // each report: check if it's safe
   for (auto report : reports)
   {
-    bool safe = true;
-    int removals = 0;
+    /**
+     * get intervals between numbers
+     */
 
-    // track number of increases & decreases
-    int increaseCount = 0;
-    int decreaseCount = 0;
+    /**
+     * inspect intervals
+     * - >2 illegal, unsafe
+     * - 2 illegal and adjacent, try removal
+     * - 1 illegal, try removal
+     * - 0 illegal, check signs
+     *   - one wrong sign, try removal
+     */
 
-    for (int i = 0; i < report.size() - 1; i++)
-    {
-      int curr = report[i];
-      int next = report[i + 1];
-
-      // all the invalid conditions
-      if (false
-          // adj levels differ by less than 1
-          || abs(curr - next) < 1
-          // adj levels differ by more than 3
-          || abs(curr - next) > 3)
-      {
-        // if removed previously, conclude unsafe
-        if (removals > 0)
-        {
-          safe = false;
-          break;
-        }
-        // perform removal (skip)
-        removals++;
-        continue;
-      }
-
-      // not removed, count inc/dec
-      if (next > curr)
-      {
-        increaseCount++;
-      }
-      else
-      {
-        decreaseCount++;
-      }
-    }
-
-    // 0 removals so far, we can tolerate 1 inc/dec difference
-    if (removals == 0)
-    {
-      // if lower count > 1, unsafe
-      int lower = (increaseCount > decreaseCount) ? decreaseCount : increaseCount;
-      if (lower > 1)
-      {
-        safe = false;
-      }
-    }
-    // 1 removal already, no tolerances
-    else if (removals == 1)
-    {
-      // both nonzero, unsafe
-      if (increaseCount > 0 && decreaseCount > 0)
-      {
-        safe = false;
-      }
-    }
-
-    if (safe)
-    {
-      count++;
-    }
+    /**
+     * safe = good after 0 or 1 removals
+     */
   }
 
   return count;
