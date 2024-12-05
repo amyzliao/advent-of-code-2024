@@ -3,13 +3,14 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 using namespace std;
 
 /// @brief count the number of safe reports
 /// @param reports
 /// @return
-int countSafe(vector<vector<int>> &reports)
+int countSafe(vector<vector<int>> const &reports)
 {
   int count = 0;
 
@@ -57,6 +58,55 @@ int countSafe(vector<vector<int>> &reports)
   return count;
 }
 
+vector<int> getIntervals(vector<int> &report)
+{
+  vector<int> intervals;
+  for (int i = 0; i < report.size() - 1; i++)
+  {
+    intervals.push_back(report[i + 1] - report[i]);
+  }
+  return intervals;
+}
+
+bool isIntervalsSafe(vector<int> &intervals)
+{
+  bool increasing = intervals[0] > 0;
+  for (int i = 0; i < intervals.size(); i++)
+  {
+    if (false
+        // too small
+        || abs(intervals[i]) < 1
+        // too big
+        || abs(intervals[i]) > 3
+        // increasing, but encounter a decrease
+        || (increasing && intervals[i] < 0)
+        // decreasing, but encounter a increase
+        || (!increasing && intervals[i] > 0))
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool doesRemovalFix(vector<int> intervals, int leftidx, int rightidx)
+{
+  // combine intervals
+  vector<int> dampenedIntervals(intervals);
+  if (leftidx != rightidx)
+  {
+    dampenedIntervals[leftidx] += dampenedIntervals[rightidx];
+  }
+  // erase right
+  dampenedIntervals.erase(dampenedIntervals.begin() + rightidx);
+  // check if it's safe
+  if (isIntervalsSafe(dampenedIntervals))
+  {
+    return true;
+  }
+  return false;
+}
+
 /// @brief count the number of safe reports, with problem dampener
 /// @param reports
 /// @return
@@ -65,24 +115,94 @@ int countSafeDampener(vector<vector<int>> &reports)
   int count = 0;
 
   // each report: check if it's safe
-  for (auto report : reports)
+  for (auto &report : reports)
   {
     /**
      * get intervals between numbers
      */
+    vector<int> intervals = getIntervals(report);
 
     /**
-     * inspect intervals
-     * - >2 illegal, unsafe
-     * - 2 illegal and adjacent, try removal
-     * - 1 illegal, try removal
-     * - 0 illegal, check signs
-     *   - one wrong sign, try removal
+     * gather info
      */
+    vector<int> increments;
+    vector<int> decrements;
+    unordered_set<int> rset;
+    for (int i = 0; i < intervals.size(); i++)
+    {
+      if (intervals[i] > 0)
+      {
+        increments.push_back(i);
+      }
+      else if (intervals[i] < 0)
+      {
+        decrements.push_back(i);
+      }
+
+      if (abs(intervals[i]) > 3 || abs(intervals[i]) < 1)
+      {
+        rset.insert(i);
+      }
+    }
 
     /**
-     * safe = good after 0 or 1 removals
+     * add lesser direction intervals to removals
      */
+    if (increments.size() < decrements.size())
+    {
+      rset.insert(increments.begin(), increments.end());
+    }
+    else
+    {
+      rset.insert(decrements.begin(), decrements.end());
+    }
+
+    // turn removals into a vector
+    vector<int> removals(rset.begin(), rset.end());
+
+    /**
+     * unsafe conditions:
+     */
+    if (false
+        // more than 2 removals needed
+        || removals.size() > 2
+        // 2 removals that are not adjacent
+        || (removals.size() == 2 && abs(removals[1] - removals[0]) > 1))
+    {
+      continue;
+    }
+
+    /**
+     * safe conditions
+     */
+    if (removals.size() == 0)
+    {
+      count++;
+      continue;
+    }
+
+    /**
+     * try dampening
+     */
+    if (removals.size() == 2 && doesRemovalFix(intervals, removals[0], removals[1]))
+    {
+      count++;
+    }
+    else if (removals.size() == 1)
+    {
+      if (false
+          // combine with prev
+          || (removals[0] > 0 && doesRemovalFix(intervals, removals[0] - 1, removals[0]))
+          // remove this interval if its first
+          || (removals[0] == 0 && doesRemovalFix(intervals, removals[0], removals[0]))
+          // combine with next
+          || (removals[0] < intervals.size() - 1 && doesRemovalFix(intervals, removals[0], removals[0] + 1))
+          // remove this interval if its last
+          || (removals[0] == intervals.size() - 1 && doesRemovalFix(intervals, removals[0], removals[0])))
+      {
+        count++;
+      }
+    }
   }
 
   return count;
