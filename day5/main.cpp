@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-// #include "part1.h"
+#include "part1.h"
 // #include "part2.h"
 
 using namespace std;
@@ -21,43 +21,40 @@ int main()
   /**
    * read in input file
    */
-  string line;
-  vector<vector<int>> rules;
+  // 2D adjacency matrix
+  size_t size = 100;
+  vector<vector<int>> rules(size, vector<int>(size, 0));
   vector<vector<int>> updates;
-  bool isRules = true;
+
+  string line;
+  while (getline(inputFile, line) && !line.empty())
+  {
+    stringstream ss(line);
+    int a, b;
+    char l;
+    ss >> a >> l >> b;
+    rules[a][b] = 1;
+  }
   while (getline(inputFile, line))
   {
-    if (line.empty())
-    {
-      isRules = false;
-      continue;
-    }
     stringstream ss(line);
-    if (isRules)
+    int x;
+    char c;
+    vector<int> pages;
+    while (ss >> x)
     {
-      int a, b;
-      char l;
-      ss >> a >> l >> b;
-      rules.push_back({a, b});
+      pages.push_back(x);
+      ss >> c;
     }
-    else
-    {
-      int x;
-      char c;
-      vector<int> pages;
-      while (ss >> x)
-      {
-        pages.push_back(x);
-        ss >> c;
-      }
-      updates.push_back(pages);
-    }
+    updates.push_back(pages);
   }
   inputFile.close();
 
   /**
    * Part 1
    */
+  int result1 = sumMiddlePages(rules, updates);
+  cout << "Part 1 Result: " << result1 << endl;
 
   /**
    * Part 2
