@@ -7,5 +7,11 @@ fi
 
 dayfolder=$1
 cd $dayfolder
-clang++ main.cpp part1.cpp -o main
+
+if [ "$dayfolder" == "day6" ]; then
+  clang++ main.cpp part1.cpp -o main
+else
+  clang++ main.cpp -o main
+fi
+
 cd ..
