@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include "part1.h"
+#include "part2.h"
 
 using namespace std;
 
@@ -37,6 +38,12 @@ int main()
    */
   int result1 = countXMAS(board);
   cout << "Part 1 Result: " << result1 << endl;
+
+  /**
+   * Part 2
+   */
+  int result2 = countX_MAS(board);
+  cout << "Part 2 Result: " << result2 << endl;
 
   return 0;
 }
