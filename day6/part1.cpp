@@ -145,9 +145,6 @@ int PatrolGuard::countVisitedPosns()
 {
   while (true)
   {
-    // cout << "Current Pos: " << currentPos.first << ", " << currentPos.second << endl;
-    // cout << "Current Dir: " << currentDir << endl;
-
     bool exit = walkToNextPos();
     // walk out of area
     if (exit)
