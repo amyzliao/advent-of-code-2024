@@ -7,5 +7,5 @@ fi
 
 dayfolder=$1
 cd $dayfolder
-clang++ -o main main.cpp
+clang++ main.cpp part1.cpp -o main
 cd ..

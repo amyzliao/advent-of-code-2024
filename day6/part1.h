@@ -1,9 +1,21 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
+#include <utility>
 #include <iostream>
 
 using namespace std;
+
+struct pair_hash
+{
+  template <class T1, class T2>
+  size_t operator()(const pair<T1, T2> &p) const
+  {
+    auto h1 = hash<T1>{}(p.first);
+    auto h2 = hash<T2>{}(p.second);
+    return h1 ^ h2;
+  }
+};
 
 class PatrolGuard
 {
@@ -11,19 +23,18 @@ private:
   vector<vector<int>> rowToCol;
   vector<vector<int>> colToRow;
 
-  tuple<int, int> currentPos;
+  pair<int, int> currentPos;
   char currentDir;
 
-  unordered_set<tuple<int, int>> visited;
+  unordered_set<pair<int, int>, pair_hash> visited;
 
-  bool findNextPos();
-  void walkToPos();
+  bool walkToNextPos();
 
 public:
   PatrolGuard(vector<vector<int>> const &rowToCol,
               vector<vector<int>> const &colToRow,
               char startDir,
-              tuple<int, int> startPos)
+              pair<int, int> startPos)
       : rowToCol(rowToCol), colToRow(colToRow), currentDir(startDir), currentPos(startPos)
   {
     visited.insert(startPos);

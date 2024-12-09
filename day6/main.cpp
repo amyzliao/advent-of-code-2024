@@ -11,7 +11,7 @@ using namespace std;
 
 int main()
 {
-  ifstream inputFile("test.txt");
+  ifstream inputFile("input.txt");
 
   if (!inputFile.is_open())
   {
@@ -29,7 +29,7 @@ int main()
 
   // start
   char startDir;
-  tuple<int, int> startPos;
+  pair<int, int> startPos;
 
   string line;
   int r = 0;
@@ -55,7 +55,7 @@ int main()
       else if (line[c] == '<' || line[c] == '>' || line[c] == '^' || line[c] == 'v')
       {
         startDir = line[c];
-        startPos = make_tuple(r, c);
+        startPos = {r, c};
       }
     }
     r++;
