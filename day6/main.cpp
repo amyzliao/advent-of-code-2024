@@ -28,7 +28,8 @@ int main()
   vector<vector<int>> colToRow;
 
   // start
-  char start;
+  char startDir;
+  tuple<int, int> startPos;
 
   string line;
   int r = 0;
@@ -53,38 +54,20 @@ int main()
       // starting pos
       else if (line[c] == '<' || line[c] == '>' || line[c] == '^' || line[c] == 'v')
       {
-        start = line[c];
+        startDir = line[c];
+        startPos = make_tuple(r, c);
       }
     }
     r++;
   }
   inputFile.close();
 
-  // print out rowToCol and colToRow
-  for (int i = 0; i < rowToCol.size(); i++)
-  {
-    cout << "Row " << i << ": ";
-    for (int j = 0; j < rowToCol[i].size(); j++)
-    {
-      cout << rowToCol[i][j] << " ";
-    }
-    cout << endl;
-  }
-  for (int i = 0; i < colToRow.size(); i++)
-  {
-    cout << "Col " << i << ": ";
-    for (int j = 0; j < colToRow[i].size(); j++)
-    {
-      cout << colToRow[i][j] << " ";
-    }
-    cout << endl;
-  }
-
   /**
    * Part 1
    */
-  // int result1 = countVisitedPosns(rowToCol, colToRow, start);
-  // cout << "Part 1 Result: " << result1 << endl;
+  PatrolGuard pg = PatrolGuard(rowToCol, colToRow, startDir, startPos);
+  int result1 = pg.countVisitedPosns();
+  cout << "Part 1 Result: " << result1 << endl;
 
   /**
    * Part 2

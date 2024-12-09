@@ -1,52 +1,35 @@
 #include <vector>
+#include <unordered_set>
+#include <unordered_map>
 #include <iostream>
 
 using namespace std;
 
-/// @brief If the update pages are in valid order, returns the value of the middle
-/// page. Otherwise, returns 0.
-/// @param rules
-/// @param update
-/// @return
-int middlePageIfValid(vector<vector<int>> const &rules, vector<int> const &update)
+class PatrolGuard
 {
-  vector<int> seen;
-  for (const auto &page : update)
-  {
-    for (const int &s : seen)
-    {
-      // breaks dependency
-      if (rules[page][s])
-      {
-        return 0;
-      }
-    }
-    seen.push_back(page);
-  }
-  return update[update.size() / 2];
-}
+private:
+  vector<vector<int>> rowToCol;
+  vector<vector<int>> colToRow;
 
-/// @brief Sums the middle pages of all updates that are in valid order.
-/// Also finds all invalid updates for part 2.
-/// @param rules
-/// @param updates
-/// @param invalidUpdates
-/// @return
-int sumMiddlePages(vector<vector<int>> const &rules,
-                   vector<vector<int>> const &updates,
-                   vector<int> &invalidUpdates)
-{
-  int res = 0;
+  tuple<int, int> currentPos;
+  char currentDir;
 
-  for (int i = 0; i < updates.size(); i++)
+  unordered_set<tuple<int, int>> visited;
+
+  bool findNextPos();
+  void walkToPos();
+
+public:
+  PatrolGuard(vector<vector<int>> const &rowToCol,
+              vector<vector<int>> const &colToRow,
+              char startDir,
+              tuple<int, int> startPos)
+      : rowToCol(rowToCol), colToRow(colToRow), currentDir(startDir), currentPos(startPos)
   {
-    int middle = middlePageIfValid(rules, updates[i]);
-    if (!middle)
-    {
-      invalidUpdates.push_back(i);
-    }
-    res += middle;
+    visited.insert(startPos);
   }
 
-  return res;
-}
+  /// @brief Counts the number of visited positions
+  /// @return
+  int countVisitedPosns();
+};
