@@ -6,10 +6,14 @@
 using namespace std;
 
 vector<vector<int>> directions = {
-    {-1, 0}, // up
-    {1, 0},  // down
-    {0, -1}, // left
-    {0, 1}   // right
+    {-1, 0},  // up
+    {1, 0},   // down
+    {0, -1},  // left
+    {0, 1},   // right
+    {-1, -1}, // up-left
+    {-1, 1},  // up-right
+    {1, -1},  // down-left
+    {1, 1}    // down-right
 };
 
 vector<char> letters = {'X', 'M', 'A', 'S'};
