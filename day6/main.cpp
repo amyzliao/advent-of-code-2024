@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -10,7 +11,7 @@ using namespace std;
 
 int main()
 {
-  ifstream inputFile("input.txt");
+  ifstream inputFile("test.txt");
 
   if (!inputFile.is_open())
   {
@@ -21,38 +22,69 @@ int main()
   /**
    * read in input file
    */
-  // 2D adjacency matrix graph where [r][c] = r must be before c
-  size_t size = 100;
-  vector<vector<int>> rules(size, vector<int>(size, 0));
-  vector<vector<int>> updates;
+  // for each row, a list of indices where walls occur
+  vector<vector<int>> rowToCol;
+  // for each col, a list of indices where walls occur
+  vector<vector<int>> colToRow;
+
+  // start
+  char start;
 
   string line;
-  while (getline(inputFile, line) && !line.empty())
-  {
-    stringstream ss(line);
-    int a, b;
-    char l;
-    ss >> a >> l >> b;
-    rules[a][b] = 1;
-  }
+  int r = 0;
   while (getline(inputFile, line))
   {
-    stringstream ss(line);
-    int x;
-    char c;
-    vector<int> pages;
-    while (ss >> x)
+    // init row
+    rowToCol.push_back(vector<int>());
+    // look through all cols for walls
+    for (int c = 0; c < line.size(); c++)
     {
-      pages.push_back(x);
-      ss >> c;
+      // first row, init vec for each col
+      if (r == 0)
+      {
+        colToRow.push_back(vector<int>());
+      }
+      // add walls
+      if (line[c] == '#')
+      {
+        rowToCol[r].push_back(c);
+        colToRow[c].push_back(r);
+      }
+      // starting pos
+      else if (line[c] == '<' || line[c] == '>' || line[c] == '^' || line[c] == 'v')
+      {
+        start = line[c];
+      }
     }
-    updates.push_back(pages);
+    r++;
   }
   inputFile.close();
+
+  // print out rowToCol and colToRow
+  for (int i = 0; i < rowToCol.size(); i++)
+  {
+    cout << "Row " << i << ": ";
+    for (int j = 0; j < rowToCol[i].size(); j++)
+    {
+      cout << rowToCol[i][j] << " ";
+    }
+    cout << endl;
+  }
+  for (int i = 0; i < colToRow.size(); i++)
+  {
+    cout << "Col " << i << ": ";
+    for (int j = 0; j < colToRow[i].size(); j++)
+    {
+      cout << colToRow[i][j] << " ";
+    }
+    cout << endl;
+  }
 
   /**
    * Part 1
    */
+  // int result1 = countVisitedPosns(rowToCol, colToRow, start);
+  // cout << "Part 1 Result: " << result1 << endl;
 
   /**
    * Part 2
