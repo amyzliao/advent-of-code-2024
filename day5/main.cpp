@@ -18,18 +18,40 @@ int main()
     return 1;
   }
 
+  /**
+   * read in input file
+   */
   string line;
-  vector<vector<char>> board;
+  vector<vector<int>> rules;
+  vector<vector<int>> updates;
+  bool isRules = true;
   while (getline(inputFile, line))
   {
-    stringstream ss(line);
-    char c;
-    vector<char> row;
-    while (ss >> c)
+    if (line.empty())
     {
-      row.push_back(c);
+      isRules = false;
+      continue;
     }
-    board.push_back(row);
+    stringstream ss(line);
+    if (isRules)
+    {
+      int a, b;
+      char l;
+      ss >> a >> l >> b;
+      rules.push_back({a, b});
+    }
+    else
+    {
+      int x;
+      char c;
+      vector<int> pages;
+      while (ss >> x)
+      {
+        pages.push_back(x);
+        ss >> c;
+      }
+      updates.push_back(pages);
+    }
   }
   inputFile.close();
 
