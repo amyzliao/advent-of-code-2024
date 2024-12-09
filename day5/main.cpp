@@ -4,13 +4,13 @@
 #include <fstream>
 #include <sstream>
 #include "part1.h"
-// #include "part2.h"
+#include "part2.h"
 
 using namespace std;
 
 int main()
 {
-  ifstream inputFile("input.txt");
+  ifstream inputFile("test.txt");
 
   if (!inputFile.is_open())
   {
@@ -21,7 +21,7 @@ int main()
   /**
    * read in input file
    */
-  // 2D adjacency matrix
+  // 2D adjacency matrix graph where [r][c] = r must be before c
   size_t size = 100;
   vector<vector<int>> rules(size, vector<int>(size, 0));
   vector<vector<int>> updates;
@@ -53,12 +53,15 @@ int main()
   /**
    * Part 1
    */
-  int result1 = sumMiddlePages(rules, updates);
+  vector<int> invalidUpdates;
+  int result1 = sumMiddlePages(rules, updates, invalidUpdates);
   cout << "Part 1 Result: " << result1 << endl;
 
   /**
    * Part 2
    */
+  int result2 = sumMiddleFixed(rules, updates, invalidUpdates);
+  cout << "Part 2 Result: " << result2 << endl;
 
   return 0;
 }

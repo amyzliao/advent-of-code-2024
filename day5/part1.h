@@ -26,14 +26,26 @@ int middlePageIfValid(vector<vector<int>> const &rules, vector<int> const &updat
   return update[update.size() / 2];
 }
 
+/// @brief Sums the middle pages of all updates that are in valid order.
+/// Also finds all invalid updates for part 2.
+/// @param rules
+/// @param updates
+/// @param invalidUpdates
+/// @return
 int sumMiddlePages(vector<vector<int>> const &rules,
-                   vector<vector<int>> const &updates)
+                   vector<vector<int>> const &updates,
+                   vector<int> &invalidUpdates)
 {
   int res = 0;
 
-  for (const auto &update : updates)
+  for (int i = 0; i < updates.size(); i++)
   {
-    res += middlePageIfValid(rules, update);
+    int middle = middlePageIfValid(rules, updates[i]);
+    if (!middle)
+    {
+      invalidUpdates.push_back(i);
+    }
+    res += middle;
   }
 
   return res;
