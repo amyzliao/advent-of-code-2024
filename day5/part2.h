@@ -1,42 +1,38 @@
 #include <vector>
 #include <queue>
+#include <unordered_map>
 
-/// @brief Fixes and update
+/// @brief For a given update, returns the middle page
+/// if it were in correct order.
 /// @param rules
 /// @param update
 /// @return
 int middleFixed(vector<vector<int>> const &rules, vector<int> const &update)
 {
-  // print out update
-  cout << "Update: ";
-  for (int i : update)
-  {
-    cout << i << " ";
-  }
-  cout << endl;
-
   // determine indegrees
-  vector<int> indegrees(rules.size(), 0);
-  for (int i = 0; i < rules.size(); i++)
+  // indegrees : page in update -> indegree
+  unordered_map<int, int> indegrees;
+  for (int i = 0; i < update.size(); i++)
   {
-    for (int j = i + 1; j < rules.size(); j++)
+    for (int j = 0; j < update.size(); j++)
     {
-      indegrees[j] += rules[i][j];
+      indegrees[update[i]] = indegrees.find(update[i]) == indegrees.end() ? 0 : indegrees[update[i]];
+      indegrees[update[i]] += rules[update[j]][update[i]];
     }
   }
 
   // make queue
   queue<int> q;
-  for (int i = 0; i < indegrees.size(); i++)
+  for (const auto &pair : indegrees)
   {
-    if (indegrees[i] == 0)
+    if (pair.second == 0)
     {
-      q.push(i);
+      q.push(pair.first);
     }
   }
 
   // process queue
-  for (int i = 0; i < update.size() / 2 - 1; i++)
+  for (int i = 0; i < update.size() / 2; i++)
   {
     int p = q.front();
     q.pop();
@@ -53,12 +49,11 @@ int middleFixed(vector<vector<int>> const &rules, vector<int> const &update)
     }
   }
 
-  // next item in q is middle page
   return q.front();
 }
 
-/// @brief If the update is invalid, returns the middle page
-/// if it were in correct order.
+/// @brief Sums the middle pages of all updates in wrong order,
+/// if they were in the right order.
 /// @param rules
 /// @param updates
 /// @param invalidUpdates

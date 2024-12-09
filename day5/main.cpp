@@ -10,7 +10,7 @@ using namespace std;
 
 int main()
 {
-  ifstream inputFile("test.txt");
+  ifstream inputFile("input.txt");
 
   if (!inputFile.is_open())
   {
