@@ -31,24 +31,33 @@ private:
   vector<vector<int>> rowToCol;
   vector<vector<int>> colToRow;
 
+  pair<int, int> startPos;
+  char startDir;
   pair<int, int> currentPos;
   char currentDir;
 
   unordered_set<pair<int, int>, pair_hash> visited;
 
+  pair<int, int> findNextWall();
+  bool isExit(pair<int, int> const &wall);
   bool walkToNextPos();
+  bool causesLoop(pair<int, int> const &pos);
 
 public:
   PatrolGuard(vector<vector<int>> const &rowToCol,
               vector<vector<int>> const &colToRow,
               char startDir,
               pair<int, int> startPos)
-      : rowToCol(rowToCol), colToRow(colToRow), currentDir(startDir), currentPos(startPos)
-  {
-    visited.insert(startPos);
-  }
+      : rowToCol(rowToCol), colToRow(colToRow),
+        startDir(startDir), startPos(startPos),
+        currentPos(startPos), currentDir(startDir) {}
 
   /// @brief Counts the number of visited positions
   /// @return
   int countVisitedPosns();
+
+  /// @brief Counts the number of possible obstructions
+  /// we can place to cause a loop.
+  /// @return
+  int countPossibleObstructions();
 };

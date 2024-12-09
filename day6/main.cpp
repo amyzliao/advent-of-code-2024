@@ -5,17 +5,8 @@
 #include <fstream>
 #include <sstream>
 #include "part1.h"
-#include "part2.h"
 
 using namespace std;
-
-/*
-INFO: yes i know my solution is overly complicated and probably less
-efficient than optimal, but i was going for space efficiency here.
-I wanted to avoid storing the entire grid in memory, instead only
-storing the locations of walls.
-not sure if it was worth it, but it was a fun exercise.
-*/
 
 int main()
 {

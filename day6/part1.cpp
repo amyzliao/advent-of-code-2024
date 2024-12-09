@@ -6,143 +6,109 @@ unordered_map<char, char> Right = {
     {'>', 'v'},
     {'v', '<'}};
 
-unordered_map<char, tuple<int, int>> Direction = {
-    {'<', make_tuple(0, -1)},
-    {'^', make_tuple(-1, 0)},
-    {'>', make_tuple(0, 1)},
-    {'v', make_tuple(1, 0)}};
+unordered_map<char, pair<int, int>> Direction = {
+    {'<', pair(0, -1)},
+    {'^', pair(-1, 0)},
+    {'>', pair(0, 1)},
+    {'v', pair(1, 0)}};
 
-bool PatrolGuard::walkToNextPos()
+pair<int, int> PatrolGuard::findNextWall()
 {
   int startR = currentPos.first;
   int startC = currentPos.second;
 
-  int wall = -1;
-  pair<int, int> newPos;
-
+  pair<int, int> wall;
+  int wallC, wallR;
   switch (currentDir)
   {
   case '<':
-    // find wall to our left
+    wallC = -1;
     for (int c : rowToCol[startR])
     {
       if (c >= startC)
       {
         break;
       }
-      wall = c;
+      wallC = c;
     }
-    // never found wall
-    if (wall == -1)
-    {
-      for (int i = startC - 1; i >= 0; i--)
-      {
-        visited.insert({startR, i});
-      }
-    }
-    // walk there
-    for (int i = startC - 1; i > wall; i--)
-    {
-      visited.insert({startR, i});
-    }
-    // where we end up
-    newPos = {startR, wall + 1};
+    wall = {startR, wallC};
     break;
-
   case '>':
-    // find wall to our right
+    wallC = colToRow.size();
     for (int c : rowToCol[startR])
     {
       if (c > startC)
       {
-        wall = c;
+        wallC = c;
         break;
       }
     }
-    // never found wall
-    if (wall == -1)
-    {
-      for (int i = startC + 1; i < colToRow.size(); i++)
-      {
-        visited.insert({startR, i});
-      }
-    }
-    // walk there
-    for (int i = startC + 1; i < wall; i++)
-    {
-      visited.insert({startR, i});
-    }
-    // where we end up
-    newPos = {startR, wall - 1};
+    wall = {startR, wallC};
     break;
-
   case '^':
-    // find wall above us
+    wallR = -1;
     for (int r : colToRow[startC])
     {
       if (r >= startR)
       {
         break;
       }
-      wall = r;
+      wallR = r;
     }
-    // never found wall
-    if (wall == -1)
-    {
-      for (int i = startR - 1; i >= 0; i--)
-      {
-        visited.insert({i, startC});
-      }
-    }
-    // walk there
-    for (int i = startR - 1; i > wall; i--)
-    {
-      visited.insert({i, startC});
-    }
-    // end up
-    newPos = {wall + 1, startC};
+    wall = {wallR, startC};
     break;
-
   case 'v':
-    // find wall below us
+    wallR = rowToCol.size();
     for (int r : colToRow[startC])
     {
       if (r > startR)
       {
-        wall = r;
+        wallR = r;
         break;
       }
     }
-    // never found wall
-    if (wall == -1)
-    {
-      for (int i = startR + 1; i < rowToCol.size(); i++)
-      {
-        visited.insert({i, startC});
-      }
-    }
-    // walk there
-    for (int i = startR + 1; i < wall; i++)
-    {
-      visited.insert({i, startC});
-    }
-    // end up
-    newPos = {wall - 1, startC};
+    wall = {wallR, startC};
     break;
   }
 
+  return wall;
+}
+
+bool PatrolGuard::isExit(pair<int, int> const &wall)
+{
+  return (wall.first < 0 || wall.first >= rowToCol.size()      // row out of bounds
+          || wall.second < 0 || wall.second >= colToRow.size() // col out of bounds
+  );
+}
+
+bool PatrolGuard::walkToNextPos()
+{
+  // find next wall
+  pair<int, int> nextWall = findNextWall();
+
+  // walk to next wall, marking visited along the way
+  pair<int, int> dir = Direction[currentDir];
+  pair<int, int> nextPos = {currentPos.first + dir.first, currentPos.second + dir.second};
+  while (nextPos != nextWall)
+  {
+    currentPos = nextPos;
+    visited.insert(currentPos);
+    nextPos = {currentPos.first + dir.first, currentPos.second + dir.second};
+  }
+
   // we never found a wall
-  if (wall == -1)
+  if (isExit(nextWall))
   {
     return true;
   }
-  // we did found a wall
-  currentPos = newPos;
+
   return false;
 }
 
 int PatrolGuard::countVisitedPosns()
 {
+  visited.insert(startPos);
+
   while (true)
   {
     bool exit = walkToNextPos();
@@ -156,4 +122,33 @@ int PatrolGuard::countVisitedPosns()
   }
 
   return visited.size();
+}
+
+bool PatrolGuard::causesLoop(pair<int, int> const &pos)
+{
+  /*
+  keep walking to next pos
+  if we reach wall we've already been to before
+  from the same direction, we have a loop
+  */
+  return false;
+}
+
+int PatrolGuard::countPossibleObstructions()
+{
+  int count = 0;
+
+  // cannot place obstruction at start
+  visited.erase(startPos);
+
+  // iterate through visited
+  for (pair<int, int> pos : visited)
+  {
+    if (causesLoop(pos))
+    {
+      count++;
+    }
+  }
+
+  return count;
 }
