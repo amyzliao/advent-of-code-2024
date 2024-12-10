@@ -10,12 +10,12 @@ each day has a folder
 run these commands from the project root.
 
 ```
-compile.bash <dayfolder>
+./compile.bash <dayfolder>
 ```
 - uses clang to compile the `main.cpp` file in that day's folder. 
 the resulting binary is in a file called `main`.
 
 ```
-run.bash <dayfolder>
+./run.bash <dayfolder>
 ```
 - runs the `main` binary inside that day's folder.
