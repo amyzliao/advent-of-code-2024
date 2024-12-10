@@ -71,6 +71,8 @@ int main()
   /**
    * Part 2
    */
+  int result2 = pg.countPossibleObstructions();
+  cout << "Part 2 Result: " << result2 << endl;
 
   return 0;
 }

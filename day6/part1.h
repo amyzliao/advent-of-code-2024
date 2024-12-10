@@ -1,6 +1,8 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
+#include <tuple>
+#include <algorithm>
 #include <utility>
 #include <iostream>
 
@@ -25,6 +27,18 @@ struct pair_hash
   }
 };
 
+struct tuple_hash
+{
+  template <class T1, class T2, class T3>
+  size_t operator()(const tuple<T1, T2, T3> &t) const
+  {
+    auto h1 = hash<T1>{}(std::get<0>(t));
+    auto h2 = hash<T2>{}(std::get<1>(t));
+    auto h3 = hash<T3>{}(std::get<2>(t));
+    return h1 ^ h2 ^ h3;
+  }
+};
+
 class PatrolGuard
 {
 private:
@@ -41,7 +55,9 @@ private:
   pair<int, int> findNextWall();
   bool isExit(pair<int, int> const &wall);
   bool walkToNextPos();
-  bool causesLoop(pair<int, int> const &pos);
+  void addWall(pair<int, int> const &pos);
+  void removeWall(pair<int, int> const &pos);
+  bool hasLoop();
 
 public:
   PatrolGuard(vector<vector<int>> const &rowToCol,
