@@ -8,14 +8,6 @@
 
 using namespace std;
 
-/*
-INFO: yes i know my solution is overly complicated and probably less
-efficient than optimal, but i was going for space efficiency here.
-I wanted to avoid storing the entire grid in memory, instead only
-storing the locations of walls.
-not sure if it was worth it, but it was a fun exercise.
-*/
-
 struct pair_hash
 {
   template <class T1, class T2>
@@ -42,21 +34,54 @@ struct tuple_hash
 class PatrolGuard
 {
 private:
+  /// @brief Store the locations of all the walls in our grid.
+  /// rowToCol[r]: row index r -> list of col indices where (r,c) contains a wall
   vector<vector<int>> rowToCol;
+  /// colToRow[c]: col index c -> list of row indices where (r,c) contains a wall
   vector<vector<int>> colToRow;
 
+  /// @brief Our starting state as determined by the input.
   pair<int, int> startPos;
   char startDir;
+
+  /// @brief For tracking internal state as we traverse the grid.
   pair<int, int> currentPos;
   char currentDir;
 
+  /// @brief Set of all positions visited as we traverse the grid.
   unordered_set<pair<int, int>, pair_hash> visited;
 
+  /// @brief Given the current position and direction,
+  /// find the position of the next wall we would hit.
+  /// @return
   pair<int, int> findNextWall();
+
+  /// @brief If findNextWall does not find a wall,
+  /// it will return the position right outside where we
+  /// exit the grid. this checks whether the position returned
+  /// by findNextWall is inside the bounds of the grid or not.
+  /// This would probably be more efficient if findNextWall
+  /// simply returned a bool as well indicating if we've exited.
+  /// @param wall : returned by findNextWall
+  /// @return
   bool isExit(pair<int, int> const &wall);
+
+  /// @brief Finds the next wall and walks to it.
+  /// All positions visited along the way are added to visited,
+  /// and our current position is updated.
+  /// @return
   bool walkToNextPos();
+
+  /// @brief Adds another wall to our grid.
+  /// @param pos
   void addWall(pair<int, int> const &pos);
+
+  /// @brief Removes a wall from our grid.
+  /// @param pos
   void removeWall(pair<int, int> const &pos);
+
+  /// @brief Checks if our grid contains a loop.
+  /// @return
   bool hasLoop();
 
 public:
